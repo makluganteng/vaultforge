@@ -39,7 +39,7 @@ Every query compounds the wiki. Nothing gets lost.
 npm install -g @anthropic-ai/claude-code
 
 # Install vaultforge globally
-npm install -g vaultforge
+npm install -g @valentinofish/vaultforge
 ```
 
 The CLI is available as `vaultforge` (or the short alias `vf`).
