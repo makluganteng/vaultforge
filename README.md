@@ -1,4 +1,4 @@
-# kb
+# vaultforge
 
 > An LLM-powered personal knowledge base engine. Give it a topic — it researches, compiles, and maintains a full Markdown wiki for you. Autonomously.
 
@@ -8,24 +8,24 @@ Built on top of [Claude Code](https://claude.ai/code). Viewed in [Obsidian](http
 
 ## The idea
 
-Most note-taking tools make you the editor. You read the sources, you write the articles, you maintain the graph. **kb inverts this.** You supply the topic. Claude does the rest — searching the web, downloading files, writing wiki articles, answering questions, linting for gaps — and files everything back into a structured Markdown wiki that compounds over time.
+Most note-taking tools make you the editor. You read the sources, you write the articles, you maintain the graph. **vaultforge inverts this.** You supply the topic. The LLM does the rest — searching the web, downloading files, writing wiki articles, answering questions, linting for gaps — and files everything back into a structured Markdown wiki that compounds over time.
 
-No RAG pipeline. No vector database. Just a well-structured index and Claude reading what it needs.
+No RAG pipeline. No vector database. Just a well-structured index and the model reading what it needs.
 
 ---
 
 ## How it works
 
 ```
-kb research "perpetual DEX funding rates"
+vaultforge research "perpetual DEX funding rates"
 ```
 
-1. **Search** — Claude searches the web for top sources on the topic
-2. **Fetch** — WebFetch pulls each URL, converts HTML to Markdown
-3. **Save** — Each source is written to `raw/` as a Markdown file
-4. **Compile** — Claude writes wiki articles, concept pages, and per-source summaries with Obsidian wikilinks
+1. **Search** — searches the web for top sources on the topic
+2. **Fetch** — pulls each URL, converts HTML to Markdown
+3. **Save** — each source is written to `raw/` as a Markdown file
+4. **Compile** — writes wiki articles, concept pages, and per-source summaries with Obsidian wikilinks
 5. **Index** — `wiki/index.md` is auto-rebuilt as a Map of Content with all articles, summaries, and tags
-6. **Query** — Ask anything; Claude reads the index and pulls relevant articles
+6. **Query** — ask anything; the model reads the index and pulls relevant articles
 7. **File back** — Q&A outputs are saved to `outputs/`
 
 Every query compounds the wiki. Nothing gets lost.
@@ -38,12 +38,25 @@ Every query compounds the wiki. Nothing gets lost.
 # Requirements: Node.js 18+, Claude Code CLI
 npm install -g @anthropic-ai/claude-code
 
-# Clone and install kb
-git clone <this-repo>
-cd kb-cli
-npm install
-npm run build
-npm link        # makes the `kb` command available globally
+# Install vaultforge globally
+npm install -g vaultforge
+```
+
+The CLI is available as `vaultforge` (or the short alias `vf`).
+
+---
+
+## Quick start
+
+```bash
+# Launch the interactive TUI dashboard
+vaultforge
+
+# Or use any command directly
+vaultforge new "perpetual futures market making"
+vaultforge research "funding rate methodologies"
+vaultforge ask "compare hyperliquid and dydx funding"
+vaultforge sessions
 ```
 
 ---
@@ -52,64 +65,99 @@ npm link        # makes the `kb` command available globally
 
 | Command | Description |
 |---|---|
-| `kb` | Launch the interactive TUI (default when no args) |
-| `kb tui` | Launch the interactive TUI explicitly |
-| `kb new <topic>` | Create a new isolated session |
-| `kb research <query>` | Auto-search, fetch, and compile wiki articles |
-| `kb add <url\|file>` | Ingest a single source into the session |
-| `kb compile` | Rebuild the full wiki from `raw/` |
-| `kb ask "<question>"` | Q&A against the wiki |
-| `kb health` | Lint the wiki — find gaps, suggest articles |
-| `kb sessions` | List all sessions with vault paths |
-| `kb switch <id>` | Switch active session |
+| `vaultforge` (no args) | Launch the interactive TUI dashboard |
+| `vaultforge tui` | Same — launch the TUI explicitly |
+| `vaultforge new <topic>` | Create a new isolated session |
+| `vaultforge research <query>` | Auto-search, fetch, and compile wiki articles |
+| `vaultforge add <url\|file>` | Ingest a single source into the session |
+| `vaultforge compile` | Rebuild the full wiki from `raw/` |
+| `vaultforge ask "<question>"` | Q&A against the wiki |
+| `vaultforge health` | Lint the wiki — find gaps, suggest articles |
+| `vaultforge sessions` | List all sessions with vault paths |
+| `vaultforge switch <id>` | Switch active session |
 
 ### Common options
 
-- `kb research <query> --max-sources 10 --depth normal` — `depth` is `shallow`, `normal`, or `deep`
-- `kb compile --force` — recompile every article from scratch
-- `kb new <topic> --model claude-sonnet-4` — pin a specific model
+- `vaultforge research <query> --max-sources 10 --depth normal` — `depth` is `shallow`, `normal`, or `deep`
+- `vaultforge compile --force` — recompile every article from scratch
+- `vaultforge new <topic> --model claude-sonnet-4` — pin a specific model
 
 ---
 
-## TUI
+## TUI dashboard
 
-Run `kb` with no arguments to launch the interactive TUI. Built with [ink](https://github.com/vadimdemedes/ink) (React for the terminal). Navigate with arrow keys, Enter to select, Escape to go back.
+Run `vaultforge` with no arguments to launch the interactive TUI. Built with [ink](https://github.com/vadimdemedes/ink) (React for the terminal).
 
 ```
- kb — Knowledge Base CLI
- Session: market making perps [rp8dSImC]
- ─────────────────────────────
- ❯ New Session
-   Research
-   Add Source
-   Ask a Question
-   Compile Wiki
-   Health Check
-   Browse Sessions
-   Exit
+┌─ SESSIONS ─────┐┌─ WIKI ──────────────┐┌─ Funding Rate ────────────────┐
+│ ▸ market_perps ││ ▸ funding-rate  cpt ││ CONCEPT · 1,240 words · 4 bl  │
+│   15 art · 41K ││   bid-ask-…    cpt  ││ updated 2026-04-07            │
+│                ││   inventory    cpt  ││                                │
+│   defi_yields  ││   index.md     idx  ││ Funding rates are periodic    │
+│   8 art · 18K  ││                     ││ payments between long and...  │
+│                ││                     ││                                │
+│   + new        ││                     ││                                │
+└────────────────┘└─────────────────────┘└────────────────────────────────┘
+┌─ TERMINAL ──────────────────────────────────────────────  $0.0234 ──┐
+│   ▸ research market making perps                                     │
+│   → WebSearch  market making perpetual futures                       │
+│   → Write      raw/avellaneda-stoikov-paper.md                       │
+│   ✓ Done 47.3s $0.0234                                              │
+└──────────────────────────────────────────────────────────────────────┘
+┌─ ▸ try: ask "compare funding models"  ·  press ? for help  ─  ⏎ run ┐
+└──────────────────────────────────────────────────────────────────────┘
+ ↑↓ navigate   ⏎ open   / search   s sort   t tag   Tab next   ? help
+ market_perps │ 15 articles │ 41K words │ ready │ $0.0234 │ 13:20 · 2026-04-07
 ```
+
+### Layout
+
+| Panel | Purpose |
+|---|---|
+| **Sessions** (left) | All your sessions with article + word counts |
+| **Wiki** (middle) | Files in the active session with type badges |
+| **Preview** (right) | Markdown preview of the highlighted file (or graph view) |
+| **Terminal** (bottom) | Live activity log + REPL command bar |
+| **Status bar** | Active session, stats, status, cost, time |
+| **Shortcut bar** | Context-aware keyboard hints |
+
+### Key bindings
+
+**Global:**
+- `Tab` cycles focus between panels (terminal panel uses Tab for autocomplete)
+- `?` opens the full keyboard shortcut overlay
+- `g` toggles graph view (force-directed wiki graph in the preview pane)
+- `Ctrl+C` quit
+
+**Wiki panel:** `/` search · `s` sort · `t` tag filter · `c` clear · `Enter` open
+
+**Preview panel:** `j/k` scroll · `f` follow `[[wikilink]]` · `[ ]` back/forward · `0/G` top/bottom
+
+**Graph panel (when in graph view):** `↑↓←→` walk to nearest connected neighbor · `t` tag filter · `r` re-run layout · `Enter` select
+
+**Terminal panel:** `Enter` run · `↑↓` history · `Tab` autocomplete · `PgUp/Dn` scroll log · `Esc` live tail
 
 ---
 
 ## Session structure
 
-Each session is a self-contained directory at `~/.kb/sessions/<id>_<slug>/`. Open it as an Obsidian vault.
+Each session is a self-contained directory at `~/.vaultforge/sessions/<id>_<slug>/`. Open it as an Obsidian vault.
 
 ```
-~/.kb/sessions/
+~/.vaultforge/sessions/
   rp8dSImC_market-making-perps/
-    CLAUDE.md              ← Claude Code brain for this session
+    CLAUDE.md              ← per-session instructions for the LLM
     session.json           ← metadata: topic, sources, state
     raw/                   ← original source files (.md, .pdf, .html)
     wiki/
-      index.md             ← Map of Content, auto-rebuilt by kb
+      index.md             ← Map of Content, auto-rebuilt by vaultforge
       concepts/            ← concept articles with wikilinks + frontmatter
       summaries/           ← per-source summaries
     assets/                ← downloaded images
-    outputs/               ← query outputs (saved by `kb ask`)
+    outputs/               ← query outputs (saved by `vaultforge ask`)
 ```
 
-Sessions never share data. Switch between topics instantly with `kb switch`.
+Sessions never share data. Switch between topics instantly with `vaultforge switch`.
 
 ### Obsidian formatting
 
@@ -121,19 +169,7 @@ Every article has:
 - **`## See Also` sections** — link to related concepts at the bottom of each article
 - **Kebab-case filenames** — `funding-rates.md`, `inventory-risk-management.md`
 
-`wiki/index.md` is a Map of Content (MOC) that's auto-regenerated after every research/compile. It groups articles, summaries, and the union of all tags.
-
----
-
-## CLAUDE.md
-
-Every session has a `CLAUDE.md` at its root. Claude Code reads this automatically. It defines how Claude should ingest, compile, answer, and lint for that specific session. `kb new` writes this file for you — you rarely need to touch it.
-
----
-
-## Output formats
-
-`kb ask` saves outputs to `outputs/` as Markdown with YAML frontmatter (title, date, question). Useful outputs can be filed back into the wiki as new articles.
+`wiki/index.md` is a Map of Content (MOC) that's auto-regenerated after every research/compile run. It groups articles, summaries, and the union of all tags.
 
 ---
 
@@ -141,10 +177,10 @@ Every session has a `CLAUDE.md` at its root. Claude Code reads this automaticall
 
 1. Install [Obsidian](https://obsidian.md)
 2. `File → Open vault → Open folder as vault`
-3. Select the session directory printed by `kb sessions` or `kb new`
+3. Select the session directory printed by `vaultforge sessions` or `vaultforge new`
 4. Graph view, backlinks, and search work out of the box
 
-You never write wiki files manually. Claude maintains them. Obsidian is just the viewer.
+You never write wiki files manually. The LLM maintains them. Obsidian is just the viewer.
 
 ---
 
@@ -153,7 +189,7 @@ You never write wiki files manually. Claude maintains them. Obsidian is just the
 - **Language** — TypeScript (Node.js 18+, ESM)
 - **CLI framework** — [commander](https://github.com/tj/commander.js)
 - **TUI framework** — [ink](https://github.com/vadimdemedes/ink) (React for the terminal)
-- **LLM engine** — Claude Code (`claude` CLI, model configurable per session)
+- **LLM engine** — Claude Code (`claude` CLI). Future versions will support Codex and open-source local models.
 - **Web tools** — Claude Code's built-in WebSearch + WebFetch
 - **Subprocess** — [execa](https://github.com/sindresorhus/execa) with stream-json output parsing
 - **Markdown** — [gray-matter](https://github.com/jonschlinkert/gray-matter) for YAML frontmatter
@@ -169,44 +205,41 @@ src/
   index.ts                  ← CLI entry; routes to TUI or commander
   cli/commands/             ← 8 subcommand handlers (new, research, ask, …)
   core/
-    session.ts              ← Session CRUD, ~/.kb config
-    compiler.ts             ← Research/compile/ask/health prompts + stream parser
+    session.ts              ← Session CRUD, ~/.vaultforge config
+    claude-runner.ts        ← Subprocess + stream-json parser
+    prompts.ts              ← Pure prompt builder functions
+    compiler.ts             ← Thin orchestrator
     indexer.ts              ← Deterministic Map-of-Content rebuilder
     ingestor.ts             ← URL fetch + local file ingestion
-  services/
-    claude.ts               ← Claude Code CLI wrapper
   tui/
-    app.tsx                 ← TUI root, screen routing
-    components/             ← Header, menu
-    screens/                ← New, Sessions, Research, Ask, Health, Add, Compile
-  utils/                    ← Markdown, paths, formatting helpers
+    app.tsx                 ← Dashboard root with focus management
+    panels/                 ← sessions, wiki, preview, graph, terminal, status
+    components/             ← header, footer, help overlay, progress line, shortcut bar
+    utils/                  ← wiki file listing, graph layout, command runner, history
+  utils/                    ← Markdown, slugify
   types/index.ts            ← Shared TypeScript interfaces
-```
-
-The compiler streams Claude's JSON events (`--output-format stream-json`) and prints human-readable progress like:
-
-```
-  → WebSearch  market making perpetual futures
-  → WebFetch  https://example.com/article-1
-  → Write  raw/avellaneda-stoikov-paper.md
-  → Edit  wiki/concepts/funding-rate.md
-  ✓ Done 47.3s $0.0234
-  · Index rebuilt
 ```
 
 ---
 
 ## Roadmap
 
-- [x] `kb new` / `kb sessions` / `kb switch`
-- [x] `kb add` — single source ingest (URL or file)
-- [x] `kb compile` — full wiki rebuild
-- [x] `kb ask` — Q&A with Markdown output
-- [x] `kb research` — autonomous web research + compile
-- [x] `kb health` — wiki linting
-- [x] Interactive TUI (ink)
+- [x] `new` / `sessions` / `switch`
+- [x] `add` — single source ingest (URL or file)
+- [x] `compile` — full wiki rebuild
+- [x] `ask` — Q&A with Markdown output
+- [x] `research` — autonomous web research + compile
+- [x] `health` — wiki linting
+- [x] Interactive TUI dashboard (ink)
 - [x] Obsidian wikilinks + auto-rebuilt MOC index
 - [x] Streaming progress with parsed tool events
+- [x] Force-directed graph view
+- [x] Search, sort, tag filter
+- [x] Wikilink navigation + back/forward history
+- [x] Command history + Tab autocomplete
+- [x] Help overlay
+- [ ] Codex backend support
+- [ ] Local model backend (llama.cpp / ollama)
 - [ ] Marp slideshow output
 - [ ] Matplotlib chart output
 - [ ] Incremental compile (diff-based)
@@ -215,10 +248,17 @@ The compiler streams Claude's JSON events (`--output-format stream-json`) and pr
 
 ---
 
-## Build & test
+## Build from source
 
 ```bash
-npm run build       # tsc → dist/
+git clone https://github.com/makluganteng/vaultforge
+cd vaultforge
+npm install
+npm run build
+npm link        # makes the `vaultforge` command available globally
+```
+
+```bash
 npm run dev         # tsx src/index.ts (no build step)
 npm run typecheck   # tsc --noEmit
 npm test            # vitest

@@ -2,7 +2,7 @@ import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { join, dirname } from 'node:path';
 import { homedir } from 'node:os';
 
-const HISTORY_FILE = join(homedir(), '.kb', 'history.json');
+const HISTORY_FILE = join(homedir(), '.vaultforge', 'history.json');
 const MAX_HISTORY = 200;
 
 /** Load command history from disk. Returns empty array if missing/corrupt. */

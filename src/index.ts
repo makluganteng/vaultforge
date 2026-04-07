@@ -17,7 +17,7 @@ const { version, description } = require('../package.json');
 const program = new Command();
 
 program
-  .name('kb')
+  .name('vaultforge')
   .version(version)
   .description(description);
 

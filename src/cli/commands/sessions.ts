@@ -10,7 +10,7 @@ export function registerSessions(program: Command): void {
       try {
         const sessions = await SessionManager.list();
         if (sessions.length === 0) {
-          console.log(chalk.dim('No sessions found. Run `kb new <topic>` to start.'));
+          console.log(chalk.dim('No sessions found. Run `vaultforge new <topic>` to start.'));
           return;
         }
         const active = await SessionManager.getActiveId();

@@ -16,10 +16,10 @@ export interface CommandContext {
 
 /**
  * Tokenize a command string respecting quoted segments.
- * `kb ask "what is funding"` → `['ask', 'what is funding']`
+ * `vaultforge ask "what is funding"` → `['ask', 'what is funding']`
  */
 export function parseCommand(input: string): string[] {
-  const trimmed = input.trim().replace(/^kb\s+/, '');
+  const trimmed = input.trim().replace(/^(?:vaultforge|vf|kb)\s+/, '');
   if (!trimmed) return [];
   const tokens: string[] = [];
   const re = /"([^"]*)"|'([^']*)'|(\S+)/g;

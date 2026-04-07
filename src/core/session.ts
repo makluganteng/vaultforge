@@ -5,8 +5,8 @@ import { nanoid } from 'nanoid';
 import { slugify } from '../utils/text.js';
 import type { KbConfig, SessionConfig } from '../types/index.js';
 
-const KB_DIR = join(homedir(), '.kb');
-const CONFIG_PATH = join(KB_DIR, 'config.json');
+const VAULTFORGE_DIR = join(homedir(), '.vaultforge');
+const CONFIG_PATH = join(VAULTFORGE_DIR, 'config.json');
 
 async function getConfig(): Promise<KbConfig> {
   try {
@@ -14,18 +14,18 @@ async function getConfig(): Promise<KbConfig> {
     return JSON.parse(raw) as KbConfig;
   } catch {
     const config: KbConfig = {
-      sessionsDir: join(KB_DIR, 'sessions'),
+      sessionsDir: join(VAULTFORGE_DIR, 'sessions'),
       activeSession: null,
       defaultModel: 'claude-sonnet-4',
     };
-    await mkdir(KB_DIR, { recursive: true });
+    await mkdir(VAULTFORGE_DIR, { recursive: true });
     await writeFile(CONFIG_PATH, JSON.stringify(config, null, 2));
     return config;
   }
 }
 
 async function saveConfig(config: KbConfig): Promise<void> {
-  await mkdir(KB_DIR, { recursive: true });
+  await mkdir(VAULTFORGE_DIR, { recursive: true });
   await writeFile(CONFIG_PATH, JSON.stringify(config, null, 2));
 }
 
@@ -60,7 +60,7 @@ async function create(
   };
 
   const claudeMd = [
-    `# KB Session: ${topic}`,
+    `# Vaultforge Session: ${topic}`,
     '',
     `You are a research assistant building a knowledge base about **${topic}**.`,
     '',
@@ -90,7 +90,7 @@ async function create(
     '',
     '## Concepts',
     '',
-    '_No articles yet. Run `kb research` to get started._',
+    '_No articles yet. Run `vaultforge research` to get started._',
     '',
     '## Summaries',
     '',
@@ -142,7 +142,7 @@ async function switchSession(id: string): Promise<SessionConfig> {
   const match = sessions.find((s) => s.id === id);
   if (!match) {
     throw new Error(
-      `Session "${id}" not found. Run \`kb list\` to see available sessions.`,
+      `Session "${id}" not found. Run \`vaultforge sessions\` to see available sessions.`,
     );
   }
 
@@ -163,7 +163,7 @@ async function getActive(): Promise<{ config: SessionConfig; dir: string }> {
   const globalConfig = await getConfig();
   if (!globalConfig.activeSession) {
     throw new Error(
-      'No active session. Create one with `kb new <topic>` or switch with `kb switch <id>`.',
+      'No active session. Create one with `vaultforge new <topic>` or switch with `vaultforge switch <id>`.',
     );
   }
 
@@ -172,7 +172,7 @@ async function getActive(): Promise<{ config: SessionConfig; dir: string }> {
   if (!match) {
     throw new Error(
       `Active session "${globalConfig.activeSession}" not found on disk. ` +
-        'Run `kb list` to see available sessions.',
+        'Run `vaultforge sessions` to see available sessions.',
     );
   }
 

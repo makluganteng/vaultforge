@@ -190,7 +190,7 @@ export function TerminalPanel({
           value={inputValue}
           onChange={onInputChange}
           onSubmit={handleSubmit}
-          placeholder={placeholder ?? 'try: kb ask "compare funding models"'}
+          placeholder={placeholder ?? 'try: vaultforge ask "compare funding models"'}
           showCursor={focused}
         />
         <Box flexGrow={1} />

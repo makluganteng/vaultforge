@@ -302,7 +302,7 @@ export function App(): React.ReactElement {
         onSubmit={handleSubmit}
         focused={focus === 'terminal'}
         busy={busy}
-        placeholder={'try: kb ask "compare funding models"  ·  press ? for help'}
+        placeholder={'try: ask "compare funding models"  ·  press ? for help'}
         history={history}
         totalCost={totalCost}
       />

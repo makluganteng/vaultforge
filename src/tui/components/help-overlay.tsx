@@ -89,7 +89,7 @@ export function HelpOverlay({ onClose }: Props): React.ReactElement {
       paddingY={1}
     >
       <Text bold color="cyan">
-        kb · keyboard shortcuts
+        vaultforge · keyboard shortcuts
       </Text>
       <Text> </Text>
       {SECTIONS.map((section) => (
