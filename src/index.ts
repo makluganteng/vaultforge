@@ -9,6 +9,7 @@ import { registerAsk } from './cli/commands/ask.js';
 import { registerHealth } from './cli/commands/health.js';
 import { registerSessions } from './cli/commands/sessions.js';
 import { registerSwitch } from './cli/commands/switch.js';
+import { registerRepo } from './cli/commands/repo.js';
 import { launchTui } from './tui/index.js';
 
 const require = createRequire(import.meta.url);
@@ -29,6 +30,7 @@ registerAsk(program);
 registerHealth(program);
 registerSessions(program);
 registerSwitch(program);
+registerRepo(program);
 
 program
   .command('tui')

@@ -36,6 +36,40 @@ export interface CompileOptions {
   force?: boolean;
 }
 
+export interface RepoIngestOptions {
+  depth?: 'shallow' | 'normal' | 'deep';
+  includeTests?: boolean;
+  force?: boolean;
+}
+
+export interface RepoInfo {
+  /** Absolute path to the repo root (same as process.cwd() when the command is run). */
+  absPath: string;
+  /** Directory basename — used as the wiki topic. */
+  name: string;
+  /** Detected primary language, if any. */
+  primaryLanguage?: string;
+  /** Known manifest files found at the repo root (e.g. package.json). */
+  manifestFiles: string[];
+  /** True if a README.md / README.rst / README exists at the root. */
+  hasReadme: boolean;
+  /** Current git commit SHA, if this is a git repo. */
+  commitSha?: string;
+  /** Current git branch, if this is a git repo. */
+  branch?: string;
+}
+
+export interface RepoWikiMeta {
+  type: 'repo';
+  name: string;
+  primaryLanguage?: string;
+  commitSha?: string;
+  branch?: string;
+  depth: 'shallow' | 'normal' | 'deep';
+  includeTests: boolean;
+  lastRun: string;
+}
+
 export type SortMode = 'title' | 'type' | 'words' | 'recent' | 'backlinks';
 
 export interface ProgressEvent {

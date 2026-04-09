@@ -1,0 +1,10 @@
+{
+  "type": "repo",
+  "name": "kb-cli",
+  "primaryLanguage": "JavaScript/TypeScript",
+  "commitSha": "f8c0469209df56fb994e9c76d73e4c37f6ab227d",
+  "branch": "v/add-a-repository-to-wiki-functionality",
+  "depth": "shallow",
+  "includeTests": false,
+  "lastRun": "2026-04-09T19:04:59.873Z"
+}
