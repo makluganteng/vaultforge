@@ -75,12 +75,51 @@ vaultforge sessions
 | `vaultforge health` | Lint the wiki — find gaps, suggest articles |
 | `vaultforge sessions` | List all sessions with vault paths |
 | `vaultforge switch <id>` | Switch active session |
+| `vaultforge repo` | Document the current repository as an Obsidian wiki at `./wiki/` |
 
 ### Common options
 
 - `vaultforge research <query> --max-sources 10 --depth normal` — `depth` is `shallow`, `normal`, or `deep`
 - `vaultforge compile --force` — recompile every article from scratch
 - `vaultforge new <topic> --model claude-sonnet-4` — pin a specific model
+- `vaultforge repo --depth shallow|normal|deep` — control coverage of the generated codebase wiki
+- `vaultforge repo --include-tests` — also document test files (skipped by default)
+- `vaultforge repo --force` — rewrite all existing wiki articles instead of skipping
+
+---
+
+## Documenting a code repo
+
+`vaultforge repo` points the same wiki-building pipeline at a local source tree instead of the web. Run it from inside any repo and it will read your code, identify bounded contexts, and write a full Obsidian-flavored wiki to `./wiki/`.
+
+```bash
+cd my-project
+vaultforge repo                 # normal depth
+vaultforge repo --depth shallow # architecture overview + top modules only
+vaultforge repo --depth deep    # exhaustive, per-file summaries + type glossary
+```
+
+Output:
+
+```
+my-project/
+├── src/
+├── package.json
+├── README.md
+└── wiki/                    ← open as an Obsidian vault
+    ├── .vaultforge/
+    │   └── session.json     ← commit sha, depth, timestamp
+    ├── index.md             ← auto-generated Map of Content
+    ├── concepts/            ← one article per module + architecture overview
+    └── summaries/           ← per-file summaries (at --depth deep)
+```
+
+Key properties:
+
+- **Runs entirely locally.** The repo flow uses a restricted tool allowlist (`Read`, `Glob`, `Grep`, `Write`, `Edit`) — no web access, no shell — so the model can only touch files under the current repo.
+- **No session required.** Unlike `research`, `repo` doesn't create anything under `~/.vaultforge/`. The wiki lives inside the repo so it can be committed alongside your code.
+- **Incremental by default.** Re-running skips concept articles that already exist. Use `--force` to rewrite from scratch.
+- **Language-agnostic.** Detects the primary language from `package.json`, `Cargo.toml`, `go.mod`, `pyproject.toml`, `Gemfile`, and friends. The prompt itself is language-agnostic — it tells the model to glob the source tree and identify modules from the directory structure.
 
 ---
 
@@ -230,6 +269,7 @@ src/
 - [x] `ask` — Q&A with Markdown output
 - [x] `research` — autonomous web research + compile
 - [x] `health` — wiki linting
+- [x] `repo` — document a local code repository as an Obsidian wiki
 - [x] Interactive TUI dashboard (ink)
 - [x] Obsidian wikilinks + auto-rebuilt MOC index
 - [x] Streaming progress with parsed tool events
